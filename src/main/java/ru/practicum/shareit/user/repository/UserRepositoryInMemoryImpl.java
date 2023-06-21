@@ -15,8 +15,8 @@ public class UserRepositoryInMemoryImpl implements UserRepository {
     private long generatorId = 0;
 
     @Override
-    public List<User> findAll() {
-        log.info("Возращено " + users.size() + " пользователей.");
+    public Collection<User> findAll() {
+        log.info("Возращено {} пользователей.", users.size());
         return new ArrayList<>(users.values());
     }
 
@@ -25,17 +25,17 @@ public class UserRepositoryInMemoryImpl implements UserRepository {
         checkUserEmail(user.getEmail());
         user.setId(++generatorId);
         users.put(user.getId(), user);
-        log.info(String.format("Пользователь с идентификатором %d добавлен", user.getId()));
+        log.info("Пользователь с идентификатором {} добавлен", user.getId());
         return user;
     }
 
     @Override
     public User getUserById(Long userId) {
         if (!users.containsKey(userId)) {
-            log.error(String.format("Пользователь с идентификатором %d не найден", userId));
-            throw new ObjectNotFoundException(String.format("Пользователь не найден", userId));
+            log.error("Пользователь с идентификатором {} не найден", userId);
+            throw new ObjectNotFoundException("Пользователь не найден");
         }
-        log.info(String.format("Пользователь с идентификатором %d возвращен", userId));
+        log.info("Пользователь с идентификатором {} возвращен", userId);
         return users.get(userId);
     }
 
@@ -50,7 +50,7 @@ public class UserRepositoryInMemoryImpl implements UserRepository {
             }
             userForUpdate.setEmail(email);
         });
-        log.info(String.format("Пользователь с идентификатором %d обновлен", userId));
+        log.info("Пользователь с идентификатором {} обновлен", userId);
         return userForUpdate;
     }
 
@@ -58,9 +58,9 @@ public class UserRepositoryInMemoryImpl implements UserRepository {
     public void deleteUserById(Long userId) {
         var user = users.remove(userId);
         if (user == null) {
-            log.warn(String.format("Пользователь с идентификатором %d не найден", userId));
+            log.warn("Пользователь с идентификатором {} не найден", userId);
         } else {
-            log.info(String.format("Пользователь с идентификатором %d удален", userId));
+            log.info("Пользователь с идентификатором {} удален", userId);
         }
     }
 

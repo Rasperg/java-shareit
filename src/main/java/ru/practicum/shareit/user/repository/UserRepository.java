@@ -2,11 +2,11 @@ package ru.practicum.shareit.user.repository;
 
 import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface UserRepository {
 
-    List<User> findAll();
+    Collection<User> findAll();
 
     User addUser(User user);
 

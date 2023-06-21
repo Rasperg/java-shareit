@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.getUserById(userId);
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
-        log.info(String.format("Пользователь с идентификатором %d добавил вещь", owner.getId()));
+        log.info("Пользователь с идентификатором {} добавил вещь", owner.getId());
         itemRepository.addItem(item);
         return ItemMapper.toItemDto(item);
     }
@@ -69,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
         Optional.ofNullable(itemDto.getDescription()).ifPresent(itemForUpdate::setDescription);
         Optional.ofNullable(itemDto.getAvailable()).ifPresent(itemForUpdate::setAvailable);
 
-        log.info(String.format("Вещь с идентификатором %d обновлена", userId));
+        log.info("Вещь с идентификатором {} обновлена", userId);
         return ItemMapper.toItemDto(itemForUpdate);
     }
 
@@ -79,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findAll().stream()
                 .filter(Item::getAvailable)
                 .filter(item -> item.getName().toLowerCase().contains(wordInLowerCase)
-                        || item.getDescription().toLowerCase().contains(word.toLowerCase()))
+                        || item.getDescription().toLowerCase().contains(wordInLowerCase))
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

@@ -3,11 +3,11 @@ package ru.practicum.shareit.item.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -18,28 +18,28 @@ public class ItemRepositoryInMemoryImpl implements ItemRepository {
     private long generatorId = 0;
 
     @Override
-    public List<Item> findAll() {
-        log.info("Возращено " + items.size() + " вещей");
-        return new ArrayList<>(items.values());
+    public Collection<Item> findAll() {
+        log.info("Возращено {} вещей.", items.size());
+        return items.values();
     }
 
     @Override
     public Item addItem(Item item) {
         if (!items.containsKey(item.getId())) {
             item.setId(++generatorId);
-        }
+        } else throw new ValidationException("Элемент уже существует");
         items.put(item.getId(), item);
-        log.info(String.format("Вещь с идентификатором %d добавлена", item.getId()));
+        log.info("Вещь с идентификатором {} добавлена", item.getId());
         return item;
     }
 
     @Override
     public Item getItemById(Long itemId) {
         if (!items.containsKey(itemId)) {
-            log.error(String.format("Вещь с идентификатором %d не найдена", itemId));
+            log.error("Вещь с идентификатором {} не найдена", itemId);
             throw new ObjectNotFoundException("Вещь не найдена");
         }
-        log.info(String.format("Вещь с идентификатором %d возвращена", itemId));
+        log.info("Вещь с идентификатором {} возвращена", itemId);
         return items.get(itemId);
     }
 
@@ -47,9 +47,9 @@ public class ItemRepositoryInMemoryImpl implements ItemRepository {
     public void deleteItemById(Long id) {
         var item = items.remove(id);
         if (item == null) {
-            log.warn(String.format("Вещь с идентификатором %d не найдена", id));
+            log.warn("Вещь с идентификатором {} не найдена", id);
         } else {
-            log.info(String.format("Вещь с идентификатором %d удалена", id));
+            log.info("Вещь с идентификатором {} удалена", id);
         }
     }
 }
