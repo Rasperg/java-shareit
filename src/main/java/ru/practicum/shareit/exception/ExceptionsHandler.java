@@ -30,4 +30,11 @@ public class ExceptionsHandler {
         log.warn("409 {}", e.getMessage(), e);
         return new ErrorResponse("Conflict 409 " + e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final BadRequestException e) {
+        log.info("Bad request error: {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
 }

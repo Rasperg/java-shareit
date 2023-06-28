@@ -9,34 +9,34 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "items")
-public class Item {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
     @NotBlank
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(nullable = false)
+    private String text;
 
     @NotNull
-    @NotBlank
-    @Column(name = "description", nullable = false)
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private Item item;
 
     @NotNull
-    @Column(name = "available", nullable = false)
-    private Boolean available;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private User author;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
 }
