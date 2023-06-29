@@ -17,10 +17,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItem_Owner(User user);
 
-    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Booking b " +
+    @Query("SELECT count(b) > 0 FROM Booking b " +
             "WHERE b.item = :item " +
             "AND b.booker = :booker " +
-            "AND b.status <> 'REJECTED' " +
+            "AND b.status = 'APPROVED' " +
             "AND b.start <= :start")
     boolean existsBookingByItemAndBookerAndStatusNotAndStart(Item item, User booker, LocalDateTime start);
 }

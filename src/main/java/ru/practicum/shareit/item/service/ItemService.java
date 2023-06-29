@@ -6,8 +6,6 @@ import java.util.Collection;
 
 public interface ItemService {
 
-    Collection<ItemDto> findAll();
-
     Collection<ItemDto> getUserItems(Long userId);
 
     ItemDto createItem(Long userId, ItemDto itemDto);

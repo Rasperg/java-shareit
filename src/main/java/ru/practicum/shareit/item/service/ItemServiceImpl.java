@@ -34,14 +34,6 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
-    public Collection<ItemDto> findAll() {
-        return itemRepository.findAll()
-                .stream()
-                .map(item -> ItemMapper.toItemDto(item, commentRepository.findByItemOrderByIdAsc(item), bookingRepository.findByItem(item)))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public Collection<ItemDto> getUserItems(Long userId) {
         User owner = userRepository.findById(userId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));

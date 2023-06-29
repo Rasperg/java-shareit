@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("Вещь недоступна для бронирования!");
         }
         if (item.getOwner().getId().equals(userId)) {
-            throw new ObjectNotFoundException("Нелья забронировать собственную вещь");
+            throw new ObjectNotFoundException("Нельзя забронировать собственную вещь");
         }
         Booking booking = BookingMapper.toBooking(bookingShortDto);
         validateBookingTime(booking);

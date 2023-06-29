@@ -38,7 +38,6 @@ public class CommentServiceImpl implements CommentService {
                 comment.getAuthor(), LocalDateTime.now())) {
             throw new BadRequestException("Нельзя оставить комменатрий если вещь не была или не находится в аренде");
         }
-        comment.setCreated(LocalDateTime.now());
         log.info("Пользователь id {} добавил комментарий id {} к вещи id {}",
                 comment.getAuthor().getId(), comment.getId(), comment.getItem().getId());
         return CommentMapper.toCommentDto(commentRepository.save(comment));
