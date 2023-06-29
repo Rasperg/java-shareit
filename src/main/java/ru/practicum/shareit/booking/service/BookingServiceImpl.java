@@ -17,6 +17,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
@@ -37,7 +38,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto createBooking(Long userId, BookingShortDto bookingShortDto) {
+    public BookingDto createBooking(Long userId, @Valid BookingShortDto bookingShortDto) {
         User booker = userRepository.findById(userId).orElseThrow();
         Item item = itemRepository.findById(bookingShortDto.getItemId()).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Вещь id %s не найдена", bookingShortDto.getItemId())));
@@ -105,17 +106,15 @@ public class BookingServiceImpl implements BookingService {
         return getBookingsByState(userBookings, stateIn).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
-    private void validateBookingTime(Booking booking) {
-        if (booking.getEnd() == null || booking.getStart() == null) {
-            throw new BadRequestException("Время начала и окончания бронирования должно быть задано");
-        }
-        if (booking.getEnd().isBefore(LocalDateTime.now()) || booking.getEnd().isBefore(booking.getStart())) {
-            throw new BadRequestException("Время конца бронирования указано некорректно.");
-        }
-        if (booking.getStart().isBefore(LocalDateTime.now()) || booking.getStart().isAfter(booking.getEnd())) {
+    public void validateBookingTime(Booking booking) throws BadRequestException {
+        LocalDateTime start = booking.getStart();
+        LocalDateTime end = booking.getEnd();
+
+        if (start.isBefore(LocalDateTime.now()) || start.isAfter(end)) {
             throw new BadRequestException("Время начала бронирования указано некорректно.");
         }
-        if (booking.getStart().equals(booking.getEnd())) {
+
+        if (start.equals(booking.getEnd())) {
             throw new BadRequestException("Время начала бронирования указано некорректно.");
         }
     }
