@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
@@ -13,9 +14,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItem(Item item);
 
-    List<Booking> findByBooker(User user);
+    List<Booking> findByBooker(User user, Pageable pageable);
 
-    List<Booking> findByItem_Owner(User user);
+    List<Booking> findByItem_Owner(User user, Pageable pageable);
 
     @Query("SELECT count(b) > 0 FROM Booking b " +
             "WHERE b.item = :item " +

@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -39,7 +41,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto createBooking(Long userId, @Valid BookingShortDto bookingShortDto) {
-        User booker = userRepository.findById(userId).orElseThrow();
+        User booker = userRepository.findById(userId).orElseThrow(() ->
+                new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));
         Item item = itemRepository.findById(bookingShortDto.getItemId()).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Вещь id %s не найдена", bookingShortDto.getItemId())));
         if (!item.getAvailable()) {
@@ -63,7 +66,6 @@ public class BookingServiceImpl implements BookingService {
         Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
         Booking booking = bookingOptional.orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Бронирование id %s не найдено", bookingId)));
-
         if (!booking.getStatus().equals(BookingStatus.WAITING)) {
             throw new BadRequestException("Бронирование было подтверждено ранее или отменено");
         }
@@ -89,19 +91,21 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDto> getAllBookingsByUser(Long userId, String state) {
+    public Collection<BookingDto> getAllBookingsByUser(Long userId, String state, Integer from, Integer size) {
         StateOfBookingRequest stateIn = getState(state);
         User user = userRepository.findById(userId).orElseThrow();
-        List<Booking> userBookings = bookingRepository.findByBooker(user);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("start").descending());
+        List<Booking> userBookings = bookingRepository.findByBooker(user, page);
         log.info("Список всех бронирований со статусом {} пользователя id {} получен", state, userId);
         return getBookingsByState(userBookings, stateIn).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
     @Override
-    public Collection<BookingDto> getBookingsForUserItems(Long userId, String state) {
+    public Collection<BookingDto> getBookingsForUserItems(Long userId, String state, Integer from, Integer size) {
         StateOfBookingRequest stateIn = getState(state);
         User user = userRepository.findById(userId).orElseThrow();
-        List<Booking> userBookings = bookingRepository.findByItem_Owner(user);
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("start").descending());
+        List<Booking> userBookings = bookingRepository.findByItem_Owner(user, page);
         log.info("Список бронирований со статусом {} для вещей пользователя id {} получен", state, userId);
         return getBookingsByState(userBookings, stateIn).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }

@@ -11,7 +11,11 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentShortDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +26,8 @@ import java.time.LocalDateTime;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
-    private final CommentMapper commentMapper;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Override
     public CommentDto getCommentById(Long commentId) {
@@ -33,7 +38,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto addNewComment(CommentShortDto commentDto, Long itemId, Long userId) {
-        Comment comment = commentMapper.toComment(commentDto, itemId, userId);
+        Item item = itemRepository.findById(itemId).orElseThrow(() ->
+                new ObjectNotFoundException(String.format("Вещь id %s не найдена", itemId)));
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));
+        Comment comment = CommentMapper.toComment(commentDto, item, user);
         if (!bookingRepository.existsBookingByItemAndBookerAndStatusNotAndStart(comment.getItem(),
                 comment.getAuthor(), LocalDateTime.now())) {
             throw new BadRequestException("Нельзя оставить комменатрий если вещь не была или не находится в аренде");
