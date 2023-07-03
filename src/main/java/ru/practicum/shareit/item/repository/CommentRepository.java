@@ -9,4 +9,6 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByItemOrderByIdAsc(Item item);
+
+    List<Comment> findByItemIdIn(List<Long> items);
 }

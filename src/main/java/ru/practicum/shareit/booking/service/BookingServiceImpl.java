@@ -160,7 +160,6 @@ public class BookingServiceImpl implements BookingService {
         userBookings = bookingStream.sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList());
 
         log.info("Список бронирований со статусом {} для вещей пользователя id {} получен", state, userId);
-        System.out.println("Проверка" + userBookings);
         return userBookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
