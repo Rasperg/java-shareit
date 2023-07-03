@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -22,7 +21,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -267,79 +265,79 @@ public class BookingServiceImplTest {
         assertThrows(ObjectNotFoundException.class, () -> bookingService.getBooking(booking.getId(), otherUser.getId()));
     }
 
-   /* @Test
-    void testGetAllBookingsByUser() {
-        List<Booking> userBookings = new ArrayList<>();
-        userBookings.add(new Booking(1L, now.plusHours(1), now.plusHours(2), item, booker, BookingStatus.WAITING));
-        userBookings.add(new Booking(2L, now.plusHours(3), now.plusHours(4), item, booker, BookingStatus.APPROVED));
+    /* @Test
+     void testGetAllBookingsByUser() {
+         List<Booking> userBookings = new ArrayList<>();
+         userBookings.add(new Booking(1L, now.plusHours(1), now.plusHours(2), item, booker, BookingStatus.WAITING));
+         userBookings.add(new Booking(2L, now.plusHours(3), now.plusHours(4), item, booker, BookingStatus.APPROVED));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-        when(bookingRepository.findByBooker(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+         when(bookingRepository.findByBooker(any(User.class), any(Pageable.class))).thenReturn(userBookings);
 
-        Collection<BookingDto> results = bookingService.getAllBookingsByUser(booker.getId(), "WAITING", 0, 10);
+         Collection<BookingDto> results = bookingService.getAllBookingsByUser(booker.getId(), "WAITING", 0, 10);
 
-        assertEquals(1, results.size());
-        assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
+         assertEquals(1, results.size());
+         assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
 
-        verify(userRepository).findById(booker.getId());
-    }
+         verify(userRepository).findById(booker.getId());
+     }
 
-    @Test
-    void testGetBookingsForUserItemsWithWaitingStatus() {
-        List<Booking> userBookings = new ArrayList<>();
-        userBookings.add(new Booking(1L, now.plusHours(1), now.plusHours(2), item, booker, BookingStatus.WAITING));
-        userBookings.add(new Booking(2L, now.plusHours(3), now.plusHours(4), item, booker, BookingStatus.APPROVED));
+     @Test
+     void testGetBookingsForUserItemsWithWaitingStatus() {
+         List<Booking> userBookings = new ArrayList<>();
+         userBookings.add(new Booking(1L, now.plusHours(1), now.plusHours(2), item, booker, BookingStatus.WAITING));
+         userBookings.add(new Booking(2L, now.plusHours(3), now.plusHours(4), item, booker, BookingStatus.APPROVED));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-        when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
 
-        Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "WAITING", 0, 10);
+         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "WAITING", 0, 10);
 
-        assertEquals(1, results.size());
-        assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
-    }
+         assertEquals(1, results.size());
+         assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
+     }
 
-    @Test
-    void testGetBookingsForUserItemsWithPastStatus() {
-        List<Booking> userBookings = new ArrayList<>();
-        userBookings.add(new Booking(1L, now.minusDays(2), now.minusDays(1), item, booker, BookingStatus.APPROVED));
-        userBookings.add(new Booking(2L, now.minusDays(5), now.minusDays(4), item, booker, BookingStatus.APPROVED));
+     @Test
+     void testGetBookingsForUserItemsWithPastStatus() {
+         List<Booking> userBookings = new ArrayList<>();
+         userBookings.add(new Booking(1L, now.minusDays(2), now.minusDays(1), item, booker, BookingStatus.APPROVED));
+         userBookings.add(new Booking(2L, now.minusDays(5), now.minusDays(4), item, booker, BookingStatus.APPROVED));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-        when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
 
-        Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "PAST", 0, 10);
+         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "PAST", 0, 10);
 
-        assertEquals(2, results.size());
-    }
+         assertEquals(2, results.size());
+     }
 
-    @Test
-    void testGetBookingsForUserItemsWithFutureStatus() {
-        List<Booking> userBookings = new ArrayList<>();
-        userBookings.add(new Booking(1L, now.plusDays(2), now.plusDays(1), item, booker, BookingStatus.APPROVED));
-        userBookings.add(new Booking(2L, now.plusDays(5), now.plusDays(4), item, booker, BookingStatus.APPROVED));
+     @Test
+     void testGetBookingsForUserItemsWithFutureStatus() {
+         List<Booking> userBookings = new ArrayList<>();
+         userBookings.add(new Booking(1L, now.plusDays(2), now.plusDays(1), item, booker, BookingStatus.APPROVED));
+         userBookings.add(new Booking(2L, now.plusDays(5), now.plusDays(4), item, booker, BookingStatus.APPROVED));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-        when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
 
-        Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "FUTURE", 0, 10);
+         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "FUTURE", 0, 10);
 
-        assertEquals(2, results.size());
-    }
+         assertEquals(2, results.size());
+     }
 
-    @Test
-    void testGetBookingsForUserItemsWithRejectedStatus() {
-        List<Booking> userBookings = new ArrayList<>();
-        userBookings.add(new Booking(1L, now.minusDays(2), now.minusDays(1), item, booker, BookingStatus.REJECTED));
+     @Test
+     void testGetBookingsForUserItemsWithRejectedStatus() {
+         List<Booking> userBookings = new ArrayList<>();
+         userBookings.add(new Booking(1L, now.minusDays(2), now.minusDays(1), item, booker, BookingStatus.REJECTED));
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-        when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
 
-        Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "REJECTED", 0, 10);
+         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "REJECTED", 0, 10);
 
-        assertEquals(1, results.size());
-    }
-*/
+         assertEquals(1, results.size());
+     }
+ */
     @Test
     void testGetBookingsForUserItemsWithIncorrectStatus() {
         List<Booking> userBookings = new ArrayList<>();
