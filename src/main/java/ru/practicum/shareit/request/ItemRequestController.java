@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.request.dto.ItemNewRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
@@ -16,11 +17,11 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto createNewRequest(@RequestHeader("X-Sharer-User-Id") final Long userId,
-                                           @RequestBody ItemRequestDto itemRequestDto) {
-        if (itemRequestDto.getDescription() == null || itemRequestDto.getDescription().isBlank()) {
+                                           @RequestBody ItemNewRequestDto itemNewRequestDto) {
+        if (itemNewRequestDto.getDescription() == null || itemNewRequestDto.getDescription().isBlank()) {
             throw new BadRequestException("Описание запроса не может быть пустым!");
         }
-        return requestService.addNewRequest(itemRequestDto, userId);
+        return requestService.addNewRequest(itemNewRequestDto, userId);
     }
 
     @GetMapping

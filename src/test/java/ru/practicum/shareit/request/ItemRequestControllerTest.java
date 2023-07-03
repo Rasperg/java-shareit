@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.request.dto.ItemNewRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
@@ -40,7 +41,7 @@ public class ItemRequestControllerTest {
 
     @Test
     void createNewRequest() throws Exception {
-        when(requestService.addNewRequest(any(ItemRequestDto.class), anyLong()))
+        when(requestService.addNewRequest(any(ItemNewRequestDto.class), anyLong()))
                 .thenReturn(requestDto);
 
         mockMvc.perform(post("/requests")
@@ -53,7 +54,7 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.description").value(requestDto.getDescription()))
                 .andExpect(jsonPath("$.created").isNotEmpty());
 
-        verify(requestService).addNewRequest(any(ItemRequestDto.class), anyLong());
+        verify(requestService).addNewRequest(any(ItemNewRequestDto.class), anyLong());
     }
 
     @Test

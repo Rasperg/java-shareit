@@ -5,6 +5,7 @@ public enum StateOfBookingRequest {
     CURRENT,
     PAST,
     FUTURE,
+
     WAITING,
     REJECTED
 }

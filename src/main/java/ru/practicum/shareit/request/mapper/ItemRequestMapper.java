@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.request.dto.ItemNewRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 
@@ -24,7 +25,7 @@ public class ItemRequestMapper {
                 .build();
     }
 
-    public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
+    public static ItemRequest toItemRequest(ItemNewRequestDto itemRequestDto) {
         return ItemRequest.builder()
                 .id(itemRequestDto.getId())
                 .description(itemRequestDto.getDescription())

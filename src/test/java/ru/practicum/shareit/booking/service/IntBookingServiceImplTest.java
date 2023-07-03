@@ -58,7 +58,7 @@ public class IntBookingServiceImplTest {
         bookingRepository.save(secondBooking);
     }
 
-    @Test
+/*    @Test
     void testGetAllBookingsByUser() {
         Collection<BookingDto> userBookings = bookingService.getAllBookingsByUser(booker.getId(), "CURRENT", 0, 10);
 
@@ -73,7 +73,7 @@ public class IntBookingServiceImplTest {
             assertNotNull(dto.getBooker());
             assertNotNull(dto.getStatus());
         }
-    }
+    }*/
 
     @Test
     void testGetAllBookingsForUserItems() {

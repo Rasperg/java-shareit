@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.ItemNewRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -34,7 +35,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     @Transactional
-    public ItemRequestDto addNewRequest(ItemRequestDto dtoFromUser, Long userId) {
+    public ItemRequestDto addNewRequest(ItemNewRequestDto dtoFromUser, Long userId) {
         User requestor = userRepository.findById(userId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));
         ItemRequest request = ItemRequestMapper.toItemRequest(dtoFromUser);
