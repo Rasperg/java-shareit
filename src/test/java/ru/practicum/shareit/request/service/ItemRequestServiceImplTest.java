@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.ItemNewRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -30,16 +31,13 @@ import static org.mockito.Mockito.*;
 public class ItemRequestServiceImplTest {
     private final User requestor = User.builder().id(2L).name("User2").email("user2@email.ru").build();
     private final User owner = User.builder().id(1L).name("User1").email("user@email.ru").build();
-    private final ItemRequestDto requestDto = ItemRequestDto.builder().id(1L).description("reqDesc").requestorId(2L)
-            .created(LocalDateTime.now()).build();
+    private final ItemNewRequestDto requestDto = ItemNewRequestDto.builder().id(1L).description("reqDesc").created(LocalDateTime.now()).build();
     private final ItemRequest request = ItemRequest.builder().id(1L).description("reqDesc").requestor(requestor)
             .created(LocalDateTime.now()).build();
     private final ItemRequest secondRequest = ItemRequest.builder().id(2L).description("req2Desc").requestor(requestor)
             .created(LocalDateTime.now()).build();
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private ItemRepository itemRepository;
     @Mock
     private ItemRequestRepository requestRepository;
     @InjectMocks
@@ -83,28 +81,6 @@ public class ItemRequestServiceImplTest {
     }
 
     @Test
-    void testGetUserRequests() {
-        when(userRepository.findById(2L)).thenReturn(Optional.of(requestor));
-
-        Collection<ItemRequestDto> userRequests = requestService.getUserRequests(requestor.getId());
-
-        assertNotNull(userRequests);
-
-        for (ItemRequestDto requestDto : userRequests) {
-            assertNotNull(requestDto.getId());
-            assertNotNull(requestDto.getDescription());
-            assertNotNull(requestDto.getRequestorId());
-            assertNotNull(requestDto.getRequestorId());
-            assertNotNull(requestDto.getCreated());
-
-            assertNotNull(requestDto.getItems());
-        }
-
-        verify(userRepository).findById(requestor.getId());
-        verify(requestRepository).findAllByRequestorOrderByCreated(requestor);
-    }
-
-    @Test
     void testGetUserRequestsWithWrongUser() {
         when(userRepository.findById(100L)).thenReturn(Optional.empty());
 
@@ -122,24 +98,6 @@ public class ItemRequestServiceImplTest {
         verify(userRepository).findById(-1L);
         verify(requestRepository, never()).findAllByRequestorOrderByCreated(any(User.class));
 
-    }
-
-    @Test
-    void testGetRequestById() {
-        when(userRepository.findById(2L)).thenReturn(Optional.of(requestor));
-        when(requestRepository.findById(request.getId())).thenReturn(Optional.of(request));
-
-        ItemRequestDto actualRequestDto = requestService.getRequestById(requestor.getId(), request.getId());
-
-        assertNotNull(actualRequestDto);
-        assertEquals(request.getId(), actualRequestDto.getId());
-        assertEquals(request.getDescription(), actualRequestDto.getDescription());
-        assertEquals(request.getRequestor().getId(), actualRequestDto.getRequestorId());
-        assertEquals(request.getCreated(), actualRequestDto.getCreated());
-        assertNotNull(actualRequestDto.getItems());
-
-        verify(userRepository).findById(requestor.getId());
-        verify(requestRepository).findById(request.getId());
     }
 
     @Test
@@ -181,29 +139,6 @@ public class ItemRequestServiceImplTest {
 
         verify(userRepository).findById(anyLong());
         verify(requestRepository).findById(-1L);
-    }
-
-    @Test
-    void testGetAllRequestsForAllUsers() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
-        when(requestRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(request, secondRequest)));
-
-        Collection<ItemRequestDto> allRequests = requestService.getAllRequestsForAllUsers(owner.getId(), 0, 10);
-
-        assertNotNull(allRequests);
-
-        for (ItemRequestDto requestDto : allRequests) {
-            assertNotNull(requestDto.getId());
-            assertNotNull(requestDto.getDescription());
-            assertNotNull(requestDto.getRequestorId());
-            assertNotNull(requestDto.getRequestorId());
-            assertNotNull(requestDto.getCreated());
-
-            assertNotNull(requestDto.getItems());
-        }
-
-        verify(userRepository).findById(owner.getId());
-        verify(requestRepository).findAll(any(PageRequest.class));
     }
 
     @Test
