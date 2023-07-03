@@ -26,12 +26,9 @@ import static org.mockito.Mockito.*;
 @RequiredArgsConstructor
 public class ItemRequestServiceImplTest {
     private final User requestor = User.builder().id(2L).name("User2").email("user2@email.ru").build();
-    private final User owner = User.builder().id(1L).name("User1").email("user@email.ru").build();
+
     private final ItemNewRequestDto requestDto = ItemNewRequestDto.builder().id(1L).description("reqDesc").created(LocalDateTime.now()).build();
-    private final ItemRequest request = ItemRequest.builder().id(1L).description("reqDesc").requestor(requestor)
-            .created(LocalDateTime.now()).build();
-    private final ItemRequest secondRequest = ItemRequest.builder().id(2L).description("req2Desc").requestor(requestor)
-            .created(LocalDateTime.now()).build();
+
     @Mock
     private UserRepository userRepository;
     @Mock
