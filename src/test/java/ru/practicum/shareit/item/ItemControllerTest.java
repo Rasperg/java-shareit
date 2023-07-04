@@ -144,6 +144,23 @@ public class ItemControllerTest {
     }
 
     @Test
+    void getUserItemsWithIncorrectPageParameters() throws Exception {
+        int invalidPage = -1;
+        int invalidSize = -10;
+
+        when(itemService.getUserItems(anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(itemDto));
+
+        mockMvc.perform(get("/items")
+                        .param("page", String.valueOf(invalidPage))
+                        .param("size", String.valueOf(invalidSize))
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isOk());
+
+        verify(itemService, never()).getUserItems(anyLong(), eq(invalidPage), eq(invalidSize));
+    }
+
+    @Test
     void searchItem() throws Exception {
         ItemDto dtoForSearch = ItemDto.builder().id(2L).name("Щетка для обуви").description("Хорошо чистит").available(true)
                 .build();
@@ -175,6 +192,25 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
 
         verify(itemService, never()).searchItem(anyString(), anyInt(), anyInt());
+    }
+
+    @Test
+    void searchItemWithIncorrectPageParameters() throws Exception {
+        int invalidPage = -1;
+        int invalidSize = -10;
+
+        ItemDto dtoForSearch = ItemDto.builder().id(2L).name("Щетка для обуви").description("Хорошо чистит").available(true)
+                .build();
+        when(itemService.searchItem(anyString(), anyInt(), anyInt()))
+                .thenReturn(List.of(dtoForSearch));
+
+        mockMvc.perform(get("/items/search")
+                        .param("text", "щетка")
+                        .param("page", String.valueOf(invalidPage))
+                        .param("size", String.valueOf(invalidSize)))
+                .andExpect(status().isOk());
+
+        verify(itemService, never()).searchItem(anyString(), eq(invalidPage), eq(invalidSize));
     }
 
     @Test

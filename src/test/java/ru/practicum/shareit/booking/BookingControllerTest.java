@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.booking.model.BookingStatus.WAITING;
 
 @WebMvcTest(BookingController.class)
 public class BookingControllerTest {
@@ -31,13 +33,21 @@ public class BookingControllerTest {
     private final BookingShortDto bookingShortDto = BookingShortDto.builder().id(1L).start(LocalDateTime.now())
             .end(LocalDateTime.now().plusHours(2)).itemId(1L).bookerId(1L).build();
     private final BookingDto bookingDto = BookingDto.builder().id(1L).start(bookingShortDto.getStart())
-            .end(bookingShortDto.getEnd()).item(itemDto).booker(userBookerDto).status(BookingStatus.WAITING).build();
+            .end(bookingShortDto.getEnd()).item(itemDto).booker(userBookerDto).status(WAITING).build();
     private final BookingDto approvedBooking = BookingDto.builder().id(2L).start(bookingShortDto.getStart())
             .end(bookingShortDto.getEnd()).item(itemDto).booker(userBookerDto).status(BookingStatus.APPROVED).build();
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     private BookingService bookingService;
+
+    @Test
+    void createBooking() throws Exception {
+
+    }
+
 
     @Test
     void approveBooking() throws Exception {

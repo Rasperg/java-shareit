@@ -102,6 +102,12 @@ public class ItemServiceImplTest {
         verify(itemRepository, never()).save(any(Item.class));
     }
 
+
+    @Test
+    void testGetUserItems() {
+
+    }
+
     @Test
     void testGetUserItemsWithWrongUser() {
         when(userRepository.findById(100L)).thenReturn(Optional.empty());
@@ -140,6 +146,16 @@ public class ItemServiceImplTest {
         assertThrows(ObjectNotFoundException.class, () -> itemService.getItemById(100L, 1L));
 
         verify(itemRepository).findById(100L);
+    }
+
+    @Test
+    void testFindAllItems() {
+
+    }
+
+    @Test
+    void testFindAllItemsWithEmptyList() {
+
     }
 
     @Test
