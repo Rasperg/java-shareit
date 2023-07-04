@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -20,9 +21,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -265,79 +264,113 @@ public class BookingServiceImplTest {
         assertThrows(ObjectNotFoundException.class, () -> bookingService.getBooking(booking.getId(), otherUser.getId()));
     }
 
-    /* @Test
-     void testGetAllBookingsByUser() {
-         List<Booking> userBookings = new ArrayList<>();
-         userBookings.add(new Booking(1L, now.plusHours(1), now.plusHours(2), item, booker, BookingStatus.WAITING));
-         userBookings.add(new Booking(2L, now.plusHours(3), now.plusHours(4), item, booker, BookingStatus.APPROVED));
+    @Test
+    void testGetAllBookingsByUser() {
+        Long userId = 1L;
+        String state = "WAITING";
+        Integer from = 0;
+        Integer size = 10;
 
-         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-         when(bookingRepository.findByBooker(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+        User user = new User();
+        user.setId(userId);
 
-         Collection<BookingDto> results = bookingService.getAllBookingsByUser(booker.getId(), "WAITING", 0, 10);
+        List<Booking> userBookings = new ArrayList<>();
+        userBookings.add(new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2), new Item(), user, BookingStatus.WAITING));
+        userBookings.add(new Booking(2L, LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(4), new Item(), user, BookingStatus.APPROVED));
 
-         assertEquals(1, results.size());
-         assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(bookingRepository.findByBookerAndStatus(user, BookingStatus.WAITING)).thenReturn(Collections.singletonList(userBookings.get(0)));
 
-         verify(userRepository).findById(booker.getId());
-     }
+        Collection<BookingDto> results = bookingService.getAllBookingsByUser(userId, state, from, size);
 
-     @Test
-     void testGetBookingsForUserItemsWithWaitingStatus() {
-         List<Booking> userBookings = new ArrayList<>();
-         userBookings.add(new Booking(1L, now.plusHours(1), now.plusHours(2), item, booker, BookingStatus.WAITING));
-         userBookings.add(new Booking(2L, now.plusHours(3), now.plusHours(4), item, booker, BookingStatus.APPROVED));
+        assertEquals(1, results.size());
+        assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
 
-         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+        verify(userRepository).findById(userId);
+        verify(bookingRepository).findByBookerAndStatus(user, BookingStatus.WAITING);
+    }
 
-         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "WAITING", 0, 10);
+    @Test
+    public void testGetBookingsForUserItemsWithWaitingStatus() {
+        Long userId = 1L;
+        String state = "WAITING";
+        Integer from = 0;
+        Integer size = 10;
 
-         assertEquals(1, results.size());
-         assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
-     }
+        User user = new User();
+        user.setId(userId);
+        List<Booking> userBookings = new ArrayList<>();
 
-     @Test
-     void testGetBookingsForUserItemsWithPastStatus() {
-         List<Booking> userBookings = new ArrayList<>();
-         userBookings.add(new Booking(1L, now.minusDays(2), now.minusDays(1), item, booker, BookingStatus.APPROVED));
-         userBookings.add(new Booking(2L, now.minusDays(5), now.minusDays(4), item, booker, BookingStatus.APPROVED));
+        Item item1 = new Item();
+        item1.setOwner(user);
+        userBookings.add(new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2), item1, user, BookingStatus.WAITING));
 
-         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+        Item item2 = new Item();
+        item2.setOwner(user);
+        userBookings.add(new Booking(2L, LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(4), item2, user, BookingStatus.APPROVED));
 
-         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "PAST", 0, 10);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(bookingRepository.findByItem_OwnerAndStatus(eq(user), eq(BookingStatus.WAITING))).thenReturn(userBookings);
 
-         assertEquals(2, results.size());
-     }
+        Collection<BookingDto> result = bookingService.getBookingsForUserItems(userId, state, from, size);
 
-     @Test
-     void testGetBookingsForUserItemsWithFutureStatus() {
-         List<Booking> userBookings = new ArrayList<>();
-         userBookings.add(new Booking(1L, now.plusDays(2), now.plusDays(1), item, booker, BookingStatus.APPROVED));
-         userBookings.add(new Booking(2L, now.plusDays(5), now.plusDays(4), item, booker, BookingStatus.APPROVED));
+        assertEquals(userBookings.size(), result.size());
+    }
 
-         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+    @Test
+    public void testGetBookingsForUserItemsWithPastStatus() {
+        Long userId = 1L;
+        String state = "PAST";
+        Integer from = 0;
+        Integer size = 10;
 
-         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "FUTURE", 0, 10);
+        User user = new User();
+        user.setId(userId);
+        List<Booking> userBookings = new ArrayList<>();
 
-         assertEquals(2, results.size());
-     }
+        Item item1 = new Item();
+        item1.setOwner(user);
+        userBookings.add(new Booking(1L, LocalDateTime.now().minusHours(2), LocalDateTime.now().minusHours(1), item1, user, BookingStatus.CANCELED));
 
-     @Test
-     void testGetBookingsForUserItemsWithRejectedStatus() {
-         List<Booking> userBookings = new ArrayList<>();
-         userBookings.add(new Booking(1L, now.minusDays(2), now.minusDays(1), item, booker, BookingStatus.REJECTED));
+        Item item2 = new Item();
+        item2.setOwner(user);
+        userBookings.add(new Booking(2L, LocalDateTime.now().minusHours(4), LocalDateTime.now().minusHours(3), item2, user, BookingStatus.APPROVED));
 
-         when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
-         when(bookingRepository.findByItem_Owner(any(User.class), any(Pageable.class))).thenReturn(userBookings);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(bookingRepository.findByItem_OwnerAndEndIsBefore(eq(user), any(LocalDateTime.class))).thenReturn(userBookings);
 
-         Collection<BookingDto> results = bookingService.getBookingsForUserItems(owner.getId(), "REJECTED", 0, 10);
+        Collection<BookingDto> result = bookingService.getBookingsForUserItems(userId, state, from, size);
 
-         assertEquals(1, results.size());
-     }
- */
+        assertEquals(userBookings.size(), result.size());
+    }
+
+    @Test
+    public void testGetBookingsForUserItemsWithFutureStatus() {
+        Long userId = 1L;
+        String state = "FUTURE";
+        Integer from = 0;
+        Integer size = 10;
+
+        User user = new User();
+        user.setId(userId);
+        List<Booking> userBookings = new ArrayList<>();
+
+        Item item1 = new Item();
+        item1.setOwner(user);
+        userBookings.add(new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2), item1, user, BookingStatus.FUTURE));
+
+        Item item2 = new Item();
+        item2.setOwner(user);
+        userBookings.add(new Booking(2L, LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(4), item2, user, BookingStatus.APPROVED));
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(bookingRepository.findByItem_OwnerAndStartIsAfter(eq(user), any(LocalDateTime.class))).thenReturn(userBookings);
+
+        Collection<BookingDto> result = bookingService.getBookingsForUserItems(userId, state, from, size);
+
+        assertEquals(userBookings.size(), result.size());
+    }
+
     @Test
     void testGetBookingsForUserItemsWithIncorrectStatus() {
         List<Booking> userBookings = new ArrayList<>();
