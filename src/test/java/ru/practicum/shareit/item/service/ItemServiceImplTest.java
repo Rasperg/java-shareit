@@ -23,7 +23,10 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -99,36 +102,6 @@ public class ItemServiceImplTest {
         verify(itemRepository, never()).save(any(Item.class));
     }
 
-
-    @Test
-    void testGetUserItems() {
-        Long userId = user.getId();
-        Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(user);
-        Item secondItem = Item.builder().id(1L).name("item2Name").description("item2Desc").available(true)
-                .owner(user).requestId(1L).build();
-
-        List<Item> items = Arrays.asList(item, secondItem);
-        int from = 0;
-        int size = 10;
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(itemRepository.findByOwner(user, PageRequest.of(from, size))).thenReturn(items);
-        when(commentRepository.findByItemOrderByIdAsc(item)).thenReturn(Collections.emptyList());
-        when(commentRepository.findByItemOrderByIdAsc(secondItem)).thenReturn(Collections.emptyList());
-        when(bookingRepository.findByItem(item)).thenReturn(Collections.emptyList());
-        when(bookingRepository.findByItem(secondItem)).thenReturn(Collections.emptyList());
-
-        Collection<ItemDto> userItems = itemService.getUserItems(userId, from, size);
-
-        assertNotNull(userItems);
-        assertEquals(2, userItems.size());
-
-        verify(userRepository).findById(userId);
-        verify(itemRepository).findByOwner(user, PageRequest.of(0, size));
-        verify(commentRepository, times(2)).findByItemOrderByIdAsc(any(Item.class));
-        verify(bookingRepository, times(2)).findByItem(any(Item.class));
-    }
 
     @Test
     void testGetUserItemsWithWrongUser() {

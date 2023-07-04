@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.dto.ItemNewRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -30,7 +31,8 @@ import static org.mockito.Mockito.*;
 public class ItemRequestServiceImplTest {
     private final User requestor = User.builder().id(2L).name("User2").email("user2@email.ru").build();
     private final User owner = User.builder().id(1L).name("User1").email("user@email.ru").build();
-    private final ItemRequestDto requestDto = ItemRequestDto.builder().id(1L).description("reqDesc").requestorId(2L)
+
+    private final ItemNewRequestDto requestDto = ItemNewRequestDto.builder().id(1L).description("reqDesc")
             .created(LocalDateTime.now()).build();
     private final ItemRequest request = ItemRequest.builder().id(1L).description("reqDesc").requestor(requestor)
             .created(LocalDateTime.now()).build();
