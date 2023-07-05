@@ -8,6 +8,8 @@ import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 
 @RestController
@@ -37,14 +39,22 @@ public class BookingController {
     }
 
     @GetMapping
-    public Collection<BookingDto> getUserBookings(@Valid @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                  @RequestParam(defaultValue = "ALL") @Valid String state) {
-        return bookingService.getAllBookingsByUser(userId, state);
+    public Collection<BookingDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                  @RequestParam(defaultValue = "ALL") String state,
+                                                  @RequestParam(value = "from", required = false, defaultValue = "0")
+                                                  @PositiveOrZero(message = "Значение 'from' должно быть положительным") final Integer from,
+                                                  @RequestParam(value = "size", required = false, defaultValue = "10")
+                                                  @Positive(message = "Значение 'size' должно быть положительным") final Integer size) {
+        return bookingService.getAllBookingsByUser(userId, state, from, size);
     }
 
     @GetMapping("/owner")
-    public Collection<BookingDto> getBookingsForUserItems(@Valid @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                          @RequestParam(defaultValue = "ALL") @Valid String state) {
-        return bookingService.getBookingsForUserItems(userId, state);
+    public Collection<BookingDto> getBookingsForUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                          @RequestParam(defaultValue = "ALL") String state,
+                                                          @RequestParam(value = "from", required = false, defaultValue = "0")
+                                                          @PositiveOrZero(message = "Значение 'from' должно быть положительным") final Integer from,
+                                                          @RequestParam(value = "size", required = false, defaultValue = "10")
+                                                          @Positive(message = "Значение 'size' должно быть положительным") final Integer size) {
+        return bookingService.getBookingsForUserItems(userId, state, from, size);
     }
 }

@@ -13,6 +13,8 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class UserDto {
     Long id;
+    @NotBlank(groups = {Create.class})
+    @NotNull(groups = {Create.class})
     String name;
     @NotBlank(message = "Проверьте корректность Email", groups = {Create.class})
     @NotNull(message = "Проверьте корректность Email", groups = {Create.class})

@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface ItemService {
 
-    Collection<ItemDto> getUserItems(Long userId);
+    Collection<ItemDto> getUserItems(Long userId, Integer from, Integer size);
 
     ItemDto createItem(Long userId, ItemDto itemDto);
 
@@ -14,7 +14,7 @@ public interface ItemService {
 
     ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto);
 
-    Collection<ItemDto> searchItem(String word);
+    Collection<ItemDto> searchItem(String word, Integer from, Integer size);
 
     void deleteItem(Long itemId);
 }

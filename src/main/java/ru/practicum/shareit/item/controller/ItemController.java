@@ -12,6 +12,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -42,16 +44,24 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") final Long userId) {
-        return itemService.getUserItems(userId);
+    public Collection<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") final Long userId,
+                                            @RequestParam(value = "from", required = false, defaultValue = "0")
+                                            @PositiveOrZero(message = "Значение 'from' должно быть положительным") final Integer from,
+                                            @RequestParam(value = "size", required = false, defaultValue = "10")
+                                            @Positive(message = "Значение 'size' должно быть положительным") final Integer size) {
+        return itemService.getUserItems(userId, from, size);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> searchItem(@RequestParam("text") final String text) {
+    public Collection<ItemDto> searchItem(@RequestParam("text") final String text,
+                                          @RequestParam(value = "from", required = false, defaultValue = "0")
+                                          @PositiveOrZero(message = "Значение 'from' должно быть положительным") final Integer from,
+                                          @RequestParam(value = "size", required = false, defaultValue = "10")
+                                          @Positive(message = "Значение 'size' должно быть положительным") final Integer size) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemService.searchItem(text);
+        return itemService.searchItem(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

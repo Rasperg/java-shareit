@@ -20,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotNull
     @Column(name = "name", nullable = false)
     private String name;
     @NotNull(message = "Проверьте корректность Email")

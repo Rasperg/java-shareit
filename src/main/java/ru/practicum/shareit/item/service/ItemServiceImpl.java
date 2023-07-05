@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -14,12 +16,11 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,16 +33,47 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
-    @Override
-    public Collection<ItemDto> getUserItems(Long userId) {
+    public Collection<ItemDto> getUserItems(Long userId, Integer from, Integer size) {
         User owner = userRepository.findById(userId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));
-        List<Item> userItem = itemRepository.findByOwner(owner);
-        return userItem.stream().map(item ->
-                        ItemMapper.toItemDto(item, commentRepository.findByItemOrderByIdAsc(item), bookingRepository.findByItem(item)))
-                .sorted(this::compareBookingDates).collect(Collectors.toList());
+
+        PageRequest page = PageRequest.of(from / size, size);
+
+        List<Item> userItems = itemRepository.findByOwnerWithOwner(owner, page);
+        Map<Long, List<Comment>> commentsByItemId = getCommentsByItemId(userItems);
+        Map<Long, List<Booking>> bookingsByItemId = getBookingsByItemId(userItems);
+
+        List<ItemDto> itemDtos = userItems.stream()
+                .map(item -> ItemMapper.toItemDto(item, commentsByItemId.getOrDefault(item.getId(), Collections.emptyList()), bookingsByItemId.getOrDefault(item.getId(), Collections.emptyList())))
+                .collect(Collectors.toList());
+
+        return itemDtos.stream()
+                .sorted(this::compareBookingDates)
+                .collect(Collectors.toList());
     }
+
+    private Map<Long, List<Comment>> getCommentsByItemId(List<Item> items) {
+        List<Long> itemIds = items.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+
+        List<Comment> comments = commentRepository.findByItemIdIn(itemIds);
+        return comments.stream()
+                .collect(Collectors.groupingBy(comment -> comment.getItem().getId()));
+    }
+
+    private Map<Long, List<Booking>> getBookingsByItemId(List<Item> items) {
+        List<Long> itemIds = items.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+
+        List<Booking> bookings = bookingRepository.findByItemIdIn(itemIds);
+        return bookings.stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+    }
+
 
     @Override
     @Transactional
@@ -50,6 +82,10 @@ public class ItemServiceImpl implements ItemService {
         User owner = userOptional.orElseThrow(() -> new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
+        if (item.getRequestId() != null) {
+            requestRepository.findById(item.getRequestId()).orElseThrow(() ->
+                    new ObjectNotFoundException(String.format("Запрос id %s не найден", item.getRequestId())));
+        }
         itemRepository.save(item);
         log.info("Пользователь с id {} добавил новую вещь", owner.getId());
         return ItemMapper.toItemDto(item);
@@ -86,8 +122,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> searchItem(String word) {
-        return itemRepository.search(word).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    public Collection<ItemDto> searchItem(String word, Integer from, Integer size) {
+        PageRequest page = PageRequest.of(from / size, size, Sort.by("name").ascending());
+        return itemRepository.search(word, page).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
