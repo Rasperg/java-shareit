@@ -19,23 +19,23 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBooker(User user, Pageable pageable);
 
-    List<Booking> findByBookerAndStatus(User user, BookingStatus status);
+    List<Booking> findByBookerAndStatus(User user, BookingStatus status, Pageable pageable);
 
-    List<Booking> findByBookerAndEndIsBefore(User user, LocalDateTime end);
+    List<Booking> findByBookerAndEndIsBefore(User user, LocalDateTime end, Pageable pageable);
 
-    List<Booking> findByBookerAndStartIsAfter(User user, LocalDateTime start);
+    List<Booking> findByBookerAndStartIsAfter(User user, LocalDateTime start, Pageable pageable);
 
-    List<Booking> findByBookerAndStartIsBeforeAndEndIsAfter(User user, LocalDateTime start, LocalDateTime end);
+    List<Booking> findByBookerAndStartIsBeforeAndEndIsAfter(User user, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     List<Booking> findByItem_Owner(User user, Pageable pageable);
 
-    List<Booking> findByItem_OwnerAndStatus(User user, BookingStatus status);
+    List<Booking> findByItem_OwnerAndStatus(User user, BookingStatus status, Pageable pageable);
 
-    List<Booking> findByItem_OwnerAndEndIsBefore(User user, LocalDateTime end);
+    List<Booking> findByItem_OwnerAndEndIsBefore(User user, LocalDateTime end, Pageable pageable);
 
-    List<Booking> findByItem_OwnerAndStartIsAfter(User user, LocalDateTime start);
+    List<Booking> findByItem_OwnerAndStartIsAfter(User user, LocalDateTime start, Pageable pageable);
 
-    List<Booking> findByItem_OwnerAndStartIsBeforeAndEndIsAfter(User user, LocalDateTime start, LocalDateTime end);
+    List<Booking> findByItem_OwnerAndStartIsBeforeAndEndIsAfter(User user, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     @Query("SELECT count(b) > 0 FROM Booking b " +
             "WHERE b.item = :item " +

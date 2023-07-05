@@ -100,26 +100,24 @@ public class BookingServiceImpl implements BookingService {
                 userBookings = bookingRepository.findByBooker(user, page);
                 break;
             case CURRENT:
-                userBookings = bookingRepository.findByBookerAndStartIsBeforeAndEndIsAfter(user, LocalDateTime.now(), LocalDateTime.now());
+                userBookings = bookingRepository.findByBookerAndStartIsBeforeAndEndIsAfter(user, LocalDateTime.now(), LocalDateTime.now(), page);
                 break;
             case PAST:
-                userBookings = bookingRepository.findByBookerAndEndIsBefore(user, LocalDateTime.now());
+                userBookings = bookingRepository.findByBookerAndEndIsBefore(user, LocalDateTime.now(), page);
                 break;
             case FUTURE:
-                userBookings = bookingRepository.findByBookerAndStartIsAfter(user, LocalDateTime.now());
+                userBookings = bookingRepository.findByBookerAndStartIsAfter(user, LocalDateTime.now(), page);
                 break;
             case WAITING:
-                userBookings = bookingRepository.findByBookerAndStatus(user, BookingStatus.WAITING);
+                userBookings = bookingRepository.findByBookerAndStatus(user, BookingStatus.WAITING, page);
                 break;
             case REJECTED:
-                userBookings = bookingRepository.findByBookerAndStatus(user, BookingStatus.REJECTED);
+                userBookings = bookingRepository.findByBookerAndStatus(user, BookingStatus.REJECTED, page);
                 break;
             default:
                 userBookings = new ArrayList<>();
                 break;
         }
-        Stream<Booking> bookingStream = userBookings.stream();
-        userBookings = bookingStream.sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList());
 
         log.info("Список всех бронирований со статусом {} пользователя id {} получен", state, userId);
         System.out.println("Проверка" + userBookings);
@@ -138,26 +136,24 @@ public class BookingServiceImpl implements BookingService {
                 userBookings = bookingRepository.findByItem_Owner(user, page);
                 break;
             case CURRENT:
-                userBookings = bookingRepository.findByItem_OwnerAndStartIsBeforeAndEndIsAfter(user, LocalDateTime.now(), LocalDateTime.now());
+                userBookings = bookingRepository.findByItem_OwnerAndStartIsBeforeAndEndIsAfter(user, LocalDateTime.now(), LocalDateTime.now(), page);
                 break;
             case PAST:
-                userBookings = bookingRepository.findByItem_OwnerAndEndIsBefore(user, LocalDateTime.now());
+                userBookings = bookingRepository.findByItem_OwnerAndEndIsBefore(user, LocalDateTime.now(), page);
                 break;
             case FUTURE:
-                userBookings = bookingRepository.findByItem_OwnerAndStartIsAfter(user, LocalDateTime.now());
+                userBookings = bookingRepository.findByItem_OwnerAndStartIsAfter(user, LocalDateTime.now(), page);
                 break;
             case WAITING:
-                userBookings = bookingRepository.findByItem_OwnerAndStatus(user, BookingStatus.WAITING);
+                userBookings = bookingRepository.findByItem_OwnerAndStatus(user, BookingStatus.WAITING, page);
                 break;
             case REJECTED:
-                userBookings = bookingRepository.findByItem_OwnerAndStatus(user, BookingStatus.REJECTED);
+                userBookings = bookingRepository.findByItem_OwnerAndStatus(user, BookingStatus.REJECTED, page);
                 break;
             default:
                 userBookings = new ArrayList<>();
                 break;
         }
-        Stream<Booking> bookingStream = userBookings.stream();
-        userBookings = bookingStream.sorted(Comparator.comparing(Booking::getStart).reversed()).collect(Collectors.toList());
 
         log.info("Список бронирований со статусом {} для вещей пользователя id {} получен", state, userId);
         return userBookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());

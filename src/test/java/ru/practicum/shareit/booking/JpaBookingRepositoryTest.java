@@ -27,6 +27,8 @@ public class JpaBookingRepositoryTest {
             .owner(owner).build();
     private final Booking booking = Booking.builder().start(LocalDateTime.now()).end(LocalDateTime.now().plusHours(2))
             .item(item).booker(booker).status(BookingStatus.WAITING).build();
+
+
     @Autowired
     private ItemRepository itemRepository;
     @Autowired
@@ -112,7 +114,7 @@ public class JpaBookingRepositoryTest {
 
     @Test
     void findByBookerAndStatus() {
-        List<Booking> actualBookings = bookingRepository.findByBookerAndStatus(booker, BookingStatus.WAITING);
+        List<Booking> actualBookings = bookingRepository.findByBookerAndStatus(booker, BookingStatus.WAITING, PageRequest.of(0, 10));
 
         assertFalse(actualBookings.isEmpty());
         assertEquals(1, actualBookings.size());
@@ -128,7 +130,7 @@ public class JpaBookingRepositoryTest {
     @Test
     void findByBookerAndEndIsBefore() {
         LocalDateTime endDateTime = LocalDateTime.now().minusHours(3);
-        List<Booking> actualBookings = bookingRepository.findByBookerAndEndIsBefore(booker, endDateTime);
+        List<Booking> actualBookings = bookingRepository.findByBookerAndEndIsBefore(booker, endDateTime, PageRequest.of(0, 10));
 
         assertTrue(actualBookings.isEmpty());
     }
@@ -136,7 +138,7 @@ public class JpaBookingRepositoryTest {
     @Test
     void findByBookerAndStartIsAfter() {
         LocalDateTime startDateTime = LocalDateTime.now().minusHours(2);
-        List<Booking> actualBookings = bookingRepository.findByBookerAndStartIsAfter(booker, startDateTime);
+        List<Booking> actualBookings = bookingRepository.findByBookerAndStartIsAfter(booker, startDateTime, PageRequest.of(0, 10));
 
         assertFalse(actualBookings.isEmpty());
         assertEquals(1, actualBookings.size());
@@ -153,7 +155,7 @@ public class JpaBookingRepositoryTest {
     void findByBookerAndStartIsBeforeAndEndIsAfter() {
         LocalDateTime startDateTime = LocalDateTime.now().plusHours(1);
         LocalDateTime endDateTime = LocalDateTime.now().minusHours(3);
-        List<Booking> actualBookings = bookingRepository.findByBookerAndStartIsBeforeAndEndIsAfter(booker, startDateTime, endDateTime);
+        List<Booking> actualBookings = bookingRepository.findByBookerAndStartIsBeforeAndEndIsAfter(booker, startDateTime, endDateTime, PageRequest.of(0, 10));
 
         assertFalse(actualBookings.isEmpty());
         assertEquals(1, actualBookings.size());
@@ -168,7 +170,7 @@ public class JpaBookingRepositoryTest {
 
     @Test
     void findByItem_OwnerAndStatus() {
-        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndStatus(owner, BookingStatus.WAITING);
+        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndStatus(owner, BookingStatus.WAITING, PageRequest.of(0, 10));
 
         assertFalse(actualBookings.isEmpty());
         assertEquals(1, actualBookings.size());
@@ -184,7 +186,7 @@ public class JpaBookingRepositoryTest {
     @Test
     void findByItem_OwnerAndEndIsBefore() {
         LocalDateTime endDateTime = LocalDateTime.now().minusHours(3);
-        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndEndIsBefore(owner, endDateTime);
+        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndEndIsBefore(owner, endDateTime, PageRequest.of(0, 10));
 
         assertTrue(actualBookings.isEmpty());
     }
@@ -192,7 +194,7 @@ public class JpaBookingRepositoryTest {
     @Test
     void findByItem_OwnerAndStartIsAfter() {
         LocalDateTime startDateTime = LocalDateTime.now().minusHours(2);
-        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndStartIsAfter(owner, startDateTime);
+        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndStartIsAfter(owner, startDateTime, PageRequest.of(0, 10));
 
         assertFalse(actualBookings.isEmpty());
         assertEquals(1, actualBookings.size());
@@ -209,7 +211,7 @@ public class JpaBookingRepositoryTest {
     void findByItem_OwnerAndStartIsBeforeAndEndIsAfter() {
         LocalDateTime startDateTime = LocalDateTime.now().plusHours(1);
         LocalDateTime endDateTime = LocalDateTime.now().minusHours(3);
-        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndStartIsBeforeAndEndIsAfter(owner, startDateTime, endDateTime);
+        List<Booking> actualBookings = bookingRepository.findByItem_OwnerAndStartIsBeforeAndEndIsAfter(owner, startDateTime, endDateTime, PageRequest.of(0, 10));
 
         assertFalse(actualBookings.isEmpty());
         assertEquals(1, actualBookings.size());

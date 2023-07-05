@@ -22,5 +22,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByRequestIdIn(Collection<Long> requestIds);
 
     @Query("SELECT i FROM Item i JOIN FETCH i.owner WHERE i.owner = :user")
-    List<Item> findByOwnerWithOwner(User user);
+    List<Item> findByOwnerWithOwner(User user, Pageable pageable);
 }

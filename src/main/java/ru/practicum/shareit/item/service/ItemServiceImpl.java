@@ -39,7 +39,9 @@ public class ItemServiceImpl implements ItemService {
         User owner = userRepository.findById(userId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));
 
-        List<Item> userItems = itemRepository.findByOwnerWithOwner(owner);
+        PageRequest page = PageRequest.of(from / size, size);
+
+        List<Item> userItems = itemRepository.findByOwnerWithOwner(owner, page);
         Map<Long, List<Comment>> commentsByItemId = getCommentsByItemId(userItems);
         Map<Long, List<Booking>> bookingsByItemId = getBookingsByItemId(userItems);
 

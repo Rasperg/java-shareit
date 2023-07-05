@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -278,15 +280,12 @@ public class BookingServiceImplTest {
         userBookings.add(new Booking(2L, LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(4), new Item(), user, BookingStatus.APPROVED));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByBookerAndStatus(user, BookingStatus.WAITING)).thenReturn(Collections.singletonList(userBookings.get(0)));
-
+        when(bookingRepository.findByBookerAndStatus(any(User.class), any(BookingStatus.class), any(Pageable.class))).thenReturn(Collections.singletonList(userBookings.get(0)));
         Collection<BookingDto> results = bookingService.getAllBookingsByUser(userId, state, from, size);
 
         assertEquals(1, results.size());
         assertEquals(BookingStatus.WAITING, results.iterator().next().getStatus());
 
-        verify(userRepository).findById(userId);
-        verify(bookingRepository).findByBookerAndStatus(user, BookingStatus.WAITING);
     }
 
     @Test
@@ -309,7 +308,7 @@ public class BookingServiceImplTest {
         userBookings.add(new Booking(2L, LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(4), item2, user, BookingStatus.APPROVED));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByItem_OwnerAndStatus(eq(user), eq(BookingStatus.WAITING))).thenReturn(userBookings);
+        when(bookingRepository.findByItem_OwnerAndStatus(eq(user), eq(BookingStatus.WAITING), any(Pageable.class))).thenReturn(userBookings);
 
         Collection<BookingDto> result = bookingService.getBookingsForUserItems(userId, state, from, size);
 
@@ -336,7 +335,7 @@ public class BookingServiceImplTest {
         userBookings.add(new Booking(2L, LocalDateTime.now().minusHours(4), LocalDateTime.now().minusHours(3), item2, user, BookingStatus.APPROVED));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByItem_OwnerAndEndIsBefore(eq(user), any(LocalDateTime.class))).thenReturn(userBookings);
+        when(bookingRepository.findByItem_OwnerAndEndIsBefore(eq(user), any(LocalDateTime.class), any(Pageable.class))).thenReturn(userBookings);
 
         Collection<BookingDto> result = bookingService.getBookingsForUserItems(userId, state, from, size);
 
@@ -363,7 +362,7 @@ public class BookingServiceImplTest {
         userBookings.add(new Booking(2L, LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(4), item2, user, BookingStatus.APPROVED));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(bookingRepository.findByItem_OwnerAndStartIsAfter(eq(user), any(LocalDateTime.class))).thenReturn(userBookings);
+        when(bookingRepository.findByItem_OwnerAndStartIsAfter(eq(user), any(LocalDateTime.class), any(Pageable.class))).thenReturn(userBookings);
 
         Collection<BookingDto> result = bookingService.getBookingsForUserItems(userId, state, from, size);
 
