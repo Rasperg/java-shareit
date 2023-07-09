@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommentServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ShareIt Server</a> &gt; <a href="index.source.html" class="el_package">ru.practicum.shareit.item.service</a> &gt; <span class="el_source">CommentServiceImpl.java</span></div><h1>CommentServiceImpl.java</h1><pre class="source lang-java linenums">package ru.practicum.shareit.item.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentShortDto;
+import ru.practicum.shareit.item.mapper.CommentMapper;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
+
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
+
+import java.time.LocalDateTime;
+
+@Service
+<span class="fc" id="L24">@Slf4j</span>
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class CommentServiceImpl implements CommentService {
+    private final CommentRepository commentRepository;
+    private final BookingRepository bookingRepository;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+
+    @Override
+    public CommentDto getCommentById(Long commentId) {
+<span class="nc" id="L35">        return CommentMapper.toCommentDto(commentRepository.findById(commentId).orElseThrow(() -&gt;</span>
+<span class="nc" id="L36">                new ObjectNotFoundException(String.format(&quot;Комментарий id %s не найден&quot;, commentId))));</span>
+    }
+
+    @Override
+    @Transactional
+    public CommentDto addNewComment(CommentShortDto commentDto, Long itemId, Long userId) {
+<span class="nc" id="L42">        Item item = itemRepository.findById(itemId).orElseThrow(() -&gt;</span>
+<span class="nc" id="L43">                new ObjectNotFoundException(String.format(&quot;Вещь id %s не найдена&quot;, itemId)));</span>
+<span class="nc" id="L44">        User user = userRepository.findById(userId).orElseThrow(() -&gt;</span>
+<span class="nc" id="L45">                new ObjectNotFoundException(String.format(&quot;Пользователь id %s не найден&quot;, userId)));</span>
+<span class="nc" id="L46">        Comment comment = CommentMapper.toComment(commentDto, item, user);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (!bookingRepository.existsBookingByItemAndBookerAndStatusNotAndStart(comment.getItem(),</span>
+<span class="nc" id="L48">                comment.getAuthor(), LocalDateTime.now())) {</span>
+<span class="nc" id="L49">            throw new BadRequestException(&quot;Нельзя оставить комменатрий если вещь не была или не находится в аренде&quot;);</span>
+        }
+<span class="nc" id="L51">        log.info(&quot;Пользователь id {} добавил комментарий id {} к вещи id {}&quot;,</span>
+<span class="nc" id="L52">                comment.getAuthor().getId(), comment.getId(), comment.getItem().getId());</span>
+<span class="nc" id="L53">        return CommentMapper.toCommentDto(commentRepository.save(comment));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

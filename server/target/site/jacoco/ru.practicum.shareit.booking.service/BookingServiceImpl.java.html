@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookingServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ShareIt Server</a> &gt; <a href="index.source.html" class="el_package">ru.practicum.shareit.booking.service</a> &gt; <span class="el_source">BookingServiceImpl.java</span></div><h1>BookingServiceImpl.java</h1><pre class="source lang-java linenums">package ru.practicum.shareit.booking.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
+
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+<span class="fc" id="L26">@Slf4j</span>
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class BookingServiceImpl implements BookingService {
+
+    private final BookingRepository bookingRepository;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+
+    @Override
+    @Transactional
+    public BookingDto createBooking(Long userId, BookingShortDto bookingShortDto) {
+<span class="nc" id="L38">        User booker = userRepository.findById(userId).orElseThrow(() -&gt;</span>
+<span class="nc" id="L39">                new ObjectNotFoundException(String.format(&quot;Пользователь id %s не найден&quot;, userId)));</span>
+<span class="nc" id="L40">        Item item = itemRepository.findById(bookingShortDto.getItemId()).orElseThrow(() -&gt;</span>
+<span class="nc" id="L41">                new ObjectNotFoundException(String.format(&quot;Вещь id %s не найдена&quot;, bookingShortDto.getItemId())));</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (!item.getAvailable()) {</span>
+<span class="nc" id="L43">            throw new BadRequestException(&quot;Вещь недоступна для бронирования!&quot;);</span>
+        }
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (item.getOwner().getId().equals(userId)) {</span>
+<span class="nc" id="L46">            throw new ObjectNotFoundException(&quot;Нельзя забронировать собственную вещь&quot;);</span>
+        }
+<span class="nc" id="L48">        Booking booking = BookingMapper.toBooking(bookingShortDto);</span>
+<span class="nc" id="L49">        booking.setBooker(booker);</span>
+<span class="nc" id="L50">        booking.setItem(item);</span>
+<span class="nc" id="L51">        bookingRepository.save(booking);</span>
+<span class="nc" id="L52">        log.info(&quot;Пользователь  id {} забронировал вещь id {}&quot;, booker.getId(), item.getId());</span>
+<span class="nc" id="L53">        return BookingMapper.toBookingDto(booking);</span>
+    }
+
+    @Override
+    @Transactional
+    public BookingDto approveBooking(Long bookingId, Long ownerId, Boolean isApproved) {
+<span class="nc" id="L59">        Optional&lt;Booking&gt; bookingOptional = bookingRepository.findById(bookingId);</span>
+<span class="nc" id="L60">        Booking booking = bookingOptional.orElseThrow(() -&gt;</span>
+<span class="nc" id="L61">                new ObjectNotFoundException(String.format(&quot;Бронирование id %s не найдено&quot;, bookingId)));</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (!booking.getStatus().equals(BookingStatus.WAITING)) {</span>
+<span class="nc" id="L63">            throw new BadRequestException(&quot;Бронирование было подтверждено ранее или отменено&quot;);</span>
+        }
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (!booking.getItem().getOwner().getId().equals(ownerId)) {</span>
+<span class="nc" id="L66">            throw new ObjectNotFoundException(String.format(&quot;Пользователь id %s не является владельцем вещи с бронированием id %s&quot;, ownerId, bookingId));</span>
+        }
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        booking.setStatus(isApproved ? BookingStatus.APPROVED : BookingStatus.REJECTED);</span>
+<span class="nc" id="L69">        bookingRepository.save(booking);</span>
+<span class="nc" id="L70">        log.info(&quot;Пользователь id {} подтвердил бронирование вещи id {}&quot;, ownerId, bookingId);</span>
+
+<span class="nc" id="L72">        return BookingMapper.toBookingDto(booking);</span>
+    }
+
+    @Override
+    public BookingDto getBooking(Long bookingId, Long userId) {
+<span class="nc" id="L77">        Optional&lt;Booking&gt; bookingOptional = bookingRepository.findById(bookingId);</span>
+<span class="nc" id="L78">        Booking booking = bookingOptional.orElseThrow(() -&gt; new ObjectNotFoundException(String.format(&quot;Бронирование id %s не найдено&quot;, bookingId)));</span>
+<span class="nc bnc" id="L79" title="All 4 branches missed.">        if (!booking.getItem().getOwner().getId().equals(userId) &amp;&amp; !booking.getBooker().getId().equals(userId)) {</span>
+<span class="nc" id="L80">            throw new ObjectNotFoundException(String.format(&quot;Пользователь id %s не является хозяином вещи и не делал бронирование id %s&quot;, userId, bookingId));</span>
+        }
+<span class="nc" id="L82">        log.info(&quot;Бронирование id {} получено пользователем id {}&quot;, bookingId, userId);</span>
+<span class="nc" id="L83">        return BookingMapper.toBookingDto(booking);</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Collection&lt;BookingDto&gt; getAllBookingsByUser(Long userId, String state, Integer from, Integer size) {
+<span class="nc" id="L89">        StateOfBookingRequest stateIn = getState(state);</span>
+<span class="nc" id="L90">        User user = userRepository.findById(userId).orElseThrow();</span>
+<span class="nc" id="L91">        PageRequest page = PageRequest.of(from / size, size, Sort.by(&quot;start&quot;).descending());</span>
+        List&lt;Booking&gt; userBookings;
+
+<span class="nc bnc" id="L94" title="All 7 branches missed.">        switch (stateIn) {</span>
+            case ALL:
+<span class="nc" id="L96">                userBookings = bookingRepository.findByBooker(user, page);</span>
+<span class="nc" id="L97">                break;</span>
+            case CURRENT:
+<span class="nc" id="L99">                userBookings = bookingRepository.findByBookerAndStartIsBeforeAndEndIsAfter(user, LocalDateTime.now(), LocalDateTime.now(), page);</span>
+<span class="nc" id="L100">                break;</span>
+            case PAST:
+<span class="nc" id="L102">                userBookings = bookingRepository.findByBookerAndEndIsBefore(user, LocalDateTime.now(), page);</span>
+<span class="nc" id="L103">                break;</span>
+            case FUTURE:
+<span class="nc" id="L105">                userBookings = bookingRepository.findByBookerAndStartIsAfter(user, LocalDateTime.now(), page);</span>
+<span class="nc" id="L106">                break;</span>
+            case WAITING:
+<span class="nc" id="L108">                userBookings = bookingRepository.findByBookerAndStatus(user, BookingStatus.WAITING, page);</span>
+<span class="nc" id="L109">                break;</span>
+            case REJECTED:
+<span class="nc" id="L111">                userBookings = bookingRepository.findByBookerAndStatus(user, BookingStatus.REJECTED, page);</span>
+<span class="nc" id="L112">                break;</span>
+            default:
+<span class="nc" id="L114">                userBookings = new ArrayList&lt;&gt;();</span>
+                break;
+        }
+
+<span class="nc" id="L118">        log.info(&quot;Список всех бронирований со статусом {} пользователя id {} получен&quot;, state, userId);</span>
+<span class="nc" id="L119">        System.out.println(&quot;Проверка&quot; + userBookings);</span>
+<span class="nc" id="L120">        return userBookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public Collection&lt;BookingDto&gt; getBookingsForUserItems(Long userId, String state, Integer from, Integer size) {
+<span class="nc" id="L125">        StateOfBookingRequest stateIn = getState(state);</span>
+<span class="nc" id="L126">        User user = userRepository.findById(userId).orElseThrow(() -&gt; new ObjectNotFoundException(String.format(&quot;Пользователь id %s не найден&quot;, userId)));</span>
+<span class="nc" id="L127">        PageRequest page = PageRequest.of(from / size, size, Sort.by(&quot;start&quot;).descending());</span>
+        List&lt;Booking&gt; userBookings;
+
+<span class="nc bnc" id="L130" title="All 7 branches missed.">        switch (stateIn) {</span>
+            case ALL:
+<span class="nc" id="L132">                userBookings = bookingRepository.findByItem_Owner(user, page);</span>
+<span class="nc" id="L133">                break;</span>
+            case CURRENT:
+<span class="nc" id="L135">                userBookings = bookingRepository.findByItem_OwnerAndStartIsBeforeAndEndIsAfter(user, LocalDateTime.now(), LocalDateTime.now(), page);</span>
+<span class="nc" id="L136">                break;</span>
+            case PAST:
+<span class="nc" id="L138">                userBookings = bookingRepository.findByItem_OwnerAndEndIsBefore(user, LocalDateTime.now(), page);</span>
+<span class="nc" id="L139">                break;</span>
+            case FUTURE:
+<span class="nc" id="L141">                userBookings = bookingRepository.findByItem_OwnerAndStartIsAfter(user, LocalDateTime.now(), page);</span>
+<span class="nc" id="L142">                break;</span>
+            case WAITING:
+<span class="nc" id="L144">                userBookings = bookingRepository.findByItem_OwnerAndStatus(user, BookingStatus.WAITING, page);</span>
+<span class="nc" id="L145">                break;</span>
+            case REJECTED:
+<span class="nc" id="L147">                userBookings = bookingRepository.findByItem_OwnerAndStatus(user, BookingStatus.REJECTED, page);</span>
+<span class="nc" id="L148">                break;</span>
+            default:
+<span class="nc" id="L150">                userBookings = new ArrayList&lt;&gt;();</span>
+                break;
+        }
+
+<span class="nc" id="L154">        log.info(&quot;Список бронирований со статусом {} для вещей пользователя id {} получен&quot;, state, userId);</span>
+<span class="nc" id="L155">        return userBookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());</span>
+    }
+
+    private StateOfBookingRequest getState(String state) {
+        try {
+<span class="nc" id="L160">            return StateOfBookingRequest.valueOf(state);</span>
+<span class="nc" id="L161">        } catch (Throwable e) {</span>
+<span class="nc" id="L162">            throw new BadRequestException(&quot;Unknown state: &quot; + state);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

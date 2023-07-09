@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="10.3">
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\booking\BookingController.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\booking\repository\BookingRepository.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\booking\service\BookingServiceImpl.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\item\ItemController.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\item\mapper\ItemMapper.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\item\repository\ItemRepository.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\item\service\ItemServiceImpl.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\request\ItemRequestController.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\request\service\ItemRequestServiceImpl.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\main\java\ru\practicum\shareit\user\service\UserServiceImpl.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\booking\BookingControllerTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\booking\JsonBookingDtoTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\booking\service\BookingServiceImplTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\item\ItemControllerTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\item\service\CommentServiceImplTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\item\service\IntCommentServiceImplTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\item\service\IntItemServiceImplTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\item\service\ItemServiceImplTest.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\server\src\test\java\ru\practicum\shareit\request\service\ItemRequestServiceImplTest.java">
+</file>
+</checkstyle>

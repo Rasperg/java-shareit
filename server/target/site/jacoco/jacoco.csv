@@ -1,0 +1,24 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+ShareIt Server,ru.practicum.shareit.booking,BookingController,0,35,0,0,0,5,0,5,0,5
+ShareIt Server,ru.practicum.shareit.user.service,UserServiceImpl,98,4,0,0,20,1,6,1,6,1
+ShareIt Server,ru.practicum.shareit.request.service,ItemRequestServiceImpl,236,4,2,0,37,1,13,1,12,1
+ShareIt Server,ru.practicum.shareit.user,UserController,0,25,0,0,0,6,0,5,0,5
+ShareIt Server,ru.practicum.shareit.request.mapper,ItemRequestMapper,45,0,2,0,13,0,4,0,3,0
+ShareIt Server,ru.practicum.shareit.exception,BadRequestException,0,4,0,0,0,2,0,1,0,1
+ShareIt Server,ru.practicum.shareit.exception,EmailAlreadyExistsException,4,0,0,0,2,0,1,0,1,0
+ShareIt Server,ru.practicum.shareit.exception,ExceptionsHandler,51,7,0,0,8,2,4,2,4,2
+ShareIt Server,ru.practicum.shareit.exception,ErrorResponse,3,0,0,0,1,0,1,0,1,0
+ShareIt Server,ru.practicum.shareit.exception,ValidationException,4,0,0,0,2,0,1,0,1,0
+ShareIt Server,ru.practicum.shareit.exception,ObjectNotFoundException,4,0,0,0,2,0,1,0,1,0
+ShareIt Server,ru.practicum.shareit.request,ItemRequestController,24,0,0,0,4,0,4,0,4,0
+ShareIt Server,ru.practicum.shareit.item.service,CommentServiceImpl,112,4,2,0,13,1,6,1,5,1
+ShareIt Server,ru.practicum.shareit.item.service,ItemServiceImpl,379,4,14,0,60,1,24,1,17,1
+ShareIt Server,ru.practicum.shareit.user.mapper,UserMapper,0,27,0,0,0,11,0,3,0,3
+ShareIt Server,ru.practicum.shareit.booking.service,BookingServiceImpl,450,4,28,0,73,1,30,1,11,1
+ShareIt Server,ru.practicum.shareit.booking.service,StateOfBookingRequest,0,39,0,0,0,7,0,1,0,1
+ShareIt Server,ru.practicum.shareit.booking.model,BookingStatus,0,27,0,0,0,5,0,1,0,1
+ShareIt Server,ru.practicum.shareit.item.mapper,CommentMapper,0,56,0,0,0,21,0,3,0,3
+ShareIt Server,ru.practicum.shareit.item.mapper,ItemMapper,127,0,14,0,37,0,12,0,5,0
+ShareIt Server,ru.practicum.shareit.item,ItemController,41,0,0,0,6,0,6,0,6,0
+ShareIt Server,ru.practicum.shareit.booking.mapper,BookingMapper,0,65,0,0,0,24,0,3,0,3
+ShareIt Server,ru.practicum.shareit,ShareItServer,5,3,0,0,2,1,1,1,1,1

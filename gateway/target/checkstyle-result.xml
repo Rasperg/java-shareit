@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="10.3">
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\gateway\src\main\java\ru\practicum\shareit\booking\BookingClient.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\gateway\src\main\java\ru\practicum\shareit\booking\BookingController.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\gateway\src\main\java\ru\practicum\shareit\client\BaseClient.java">
+</file>
+<file name="C:\Users\UserName\IdeaProjects\java-shareit\gateway\src\main\java\ru\practicum\shareit\item\ItemController.java">
+</file>
+</checkstyle>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookingController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ShareIt Server</a> &gt; <a href="index.source.html" class="el_package">ru.practicum.shareit.booking</a> &gt; <span class="el_source">BookingController.java</span></div><h1>BookingController.java</h1><pre class="source lang-java linenums">package ru.practicum.shareit.booking;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.booking.service.BookingService;
+
+import java.util.Collection;
+
+@RestController
+@Validated
+@RequestMapping(path = &quot;/bookings&quot;)
+@RequiredArgsConstructor
+public class BookingController {
+
+    private final BookingService bookingService;
+
+    @PostMapping
+    public BookingDto createNewBooking(@RequestHeader(&quot;X-Sharer-User-Id&quot;) Long userId,
+                                       @RequestBody final BookingShortDto bookingShortDto) {
+<span class="fc" id="L23">        return bookingService.createBooking(userId, bookingShortDto);</span>
+    }
+
+    @PatchMapping(&quot;/{bookingId}&quot;)
+    public BookingDto approveBooking(@RequestHeader(&quot;X-Sharer-User-Id&quot;) Long userId,
+                                     @PathVariable Long bookingId,
+                                     @RequestParam Boolean approved) {
+<span class="fc" id="L30">        return bookingService.approveBooking(userId, bookingId, approved);</span>
+    }
+
+    @GetMapping(&quot;/{bookingId}&quot;)
+    public BookingDto getBooking(@PathVariable final Long bookingId,
+                                 @RequestHeader(&quot;X-Sharer-User-Id&quot;) Long userId) {
+<span class="fc" id="L36">        return bookingService.getBooking(bookingId, userId);</span>
+
+    }
+
+    @GetMapping
+    public Collection&lt;BookingDto&gt; getUserBookings(@RequestHeader(&quot;X-Sharer-User-Id&quot;) Long userId,
+                                                  @RequestParam(defaultValue = &quot;ALL&quot;)String state,
+                                                  @RequestParam(value = &quot;from&quot;, required = false, defaultValue = &quot;0&quot;)
+                                                      final Integer from,
+                                                  @RequestParam(value = &quot;size&quot;, required = false, defaultValue = &quot;10&quot;)
+                                                      final Integer size) {
+<span class="fc" id="L47">        return bookingService.getAllBookingsByUser(userId, state, from, size);</span>
+    }
+
+    @GetMapping(&quot;/owner&quot;)
+    public Collection&lt;BookingDto&gt; getBookingsForUserItems(@RequestHeader(&quot;X-Sharer-User-Id&quot;) Long userId,
+                                                          @RequestParam(defaultValue = &quot;ALL&quot;)String state,
+                                                          @RequestParam(value = &quot;from&quot;, required = false, defaultValue = &quot;0&quot;)
+                                                              final Integer from,
+                                                          @RequestParam(value = &quot;size&quot;, required = false, defaultValue = &quot;10&quot;)
+                                                              final Integer size) {
+<span class="fc" id="L57">        return bookingService.getBookingsForUserItems(userId, state, from, size);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

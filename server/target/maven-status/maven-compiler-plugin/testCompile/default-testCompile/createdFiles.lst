@@ -1,0 +1,17 @@
+ru\practicum\shareit\item\JpaItemRepositoryTest.class
+ru\practicum\shareit\ShareItTests.class
+ru\practicum\shareit\request\JpaItemRequestRepositoryTest.class
+ru\practicum\shareit\booking\BookingControllerTest.class
+ru\practicum\shareit\user\service\IntUserServiceImplTest.class
+ru\practicum\shareit\item\service\ItemServiceImplTest.class
+ru\practicum\shareit\booking\JsonBookingDtoTest.class
+ru\practicum\shareit\request\ItemRequestControllerTest.class
+ru\practicum\shareit\request\service\IntItemRequestServiceImplTest.class
+ru\practicum\shareit\user\UserControllerTest.class
+ru\practicum\shareit\booking\JpaBookingRepositoryTest.class
+ru\practicum\shareit\booking\service\BookingServiceImplTest.class
+ru\practicum\shareit\item\JpaCommentRepositoryTest.class
+ru\practicum\shareit\item\service\IntItemServiceImplTest.class
+ru\practicum\shareit\item\service\IntCommentServiceImplTest.class
+ru\practicum\shareit\item\ItemControllerTest.class
+ru\practicum\shareit\booking\service\IntBookingServiceImplTest.class

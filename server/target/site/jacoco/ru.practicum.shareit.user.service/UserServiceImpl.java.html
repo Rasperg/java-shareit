@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ShareIt Server</a> &gt; <a href="index.source.html" class="el_package">ru.practicum.shareit.user.service</a> &gt; <span class="el_source">UserServiceImpl.java</span></div><h1>UserServiceImpl.java</h1><pre class="source lang-java linenums">package ru.practicum.shareit.user.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.model.User;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+<span class="fc" id="L18">@Slf4j</span>
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+
+    @Override
+    public Collection&lt;UserDto&gt; findAll() {
+<span class="nc" id="L27">        return userRepository.findAll()</span>
+<span class="nc" id="L28">                .stream()</span>
+<span class="nc" id="L29">                .map(UserMapper::toUserDto)</span>
+<span class="nc" id="L30">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    @Transactional
+    public UserDto addUser(UserDto userDto) {
+<span class="nc" id="L36">        User saved = userRepository.save(UserMapper.toUser(userDto));</span>
+<span class="nc" id="L37">        log.info(&quot;Пользователь id {} добавлен&quot;, saved.getId());</span>
+<span class="nc" id="L38">        return UserMapper.toUserDto(saved);</span>
+    }
+
+    @Override
+    public UserDto getUserById(Long userId) {
+<span class="nc" id="L43">        Optional&lt;User&gt; userOptional = userRepository.findById(userId);</span>
+<span class="nc" id="L44">        User user = userOptional.orElseThrow(() -&gt; new ObjectNotFoundException(String.format(&quot;Пользователь id %s не найден&quot;, userId)));</span>
+<span class="nc" id="L45">        log.info(&quot;Пользователь id {} возвращен&quot;, userId);</span>
+<span class="nc" id="L46">        return UserMapper.toUserDto(user);</span>
+    }
+
+    @Override
+    @Transactional
+    public UserDto updateUser(Long id, UserDto userDto) {
+<span class="nc" id="L52">        User userForUpdate = UserMapper.toUser(getUserById(id));</span>
+<span class="nc" id="L53">        User newUser = UserMapper.toUser(userDto);</span>
+
+<span class="nc" id="L55">        Optional.ofNullable(newUser.getName()).ifPresent(userForUpdate::setName);</span>
+<span class="nc" id="L56">        Optional.ofNullable(newUser.getEmail()).ifPresent(userForUpdate::setEmail);</span>
+
+<span class="nc" id="L58">        userRepository.save(userForUpdate);</span>
+<span class="nc" id="L59">        log.info(&quot;Пользователь id {} обновлен&quot;, id);</span>
+<span class="nc" id="L60">        return UserMapper.toUserDto(userForUpdate);</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserById(Long userId) {
+<span class="nc" id="L66">        userRepository.deleteById(userId);</span>
+<span class="nc" id="L67">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

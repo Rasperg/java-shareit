@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ShareIt Server</a> &gt; <a href="index.source.html" class="el_package">ru.practicum.shareit.item.service</a> &gt; <span class="el_source">ItemServiceImpl.java</span></div><h1>ItemServiceImpl.java</h1><pre class="source lang-java linenums">package ru.practicum.shareit.item.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L29">@Slf4j</span>
+@Transactional(readOnly = true)
+public class ItemServiceImpl implements ItemService {
+
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
+
+    public Collection&lt;ItemDto&gt; getUserItems(Long userId, Integer from, Integer size) {
+<span class="nc" id="L40">        User owner = userRepository.findById(userId).orElseThrow(() -&gt;</span>
+<span class="nc" id="L41">                new ObjectNotFoundException(String.format(&quot;Пользователь id %s не найден&quot;, userId)));</span>
+
+<span class="nc" id="L43">        PageRequest page = PageRequest.of(from / size, size);</span>
+
+<span class="nc" id="L45">        List&lt;Item&gt; userItems = itemRepository.findByOwnerWithOwner(owner, page);</span>
+<span class="nc" id="L46">        Map&lt;Long, List&lt;Comment&gt;&gt; commentsByItemId = getCommentsByItemId(userItems);</span>
+<span class="nc" id="L47">        Map&lt;Long, List&lt;Booking&gt;&gt; bookingsByItemId = getBookingsByItemId(userItems);</span>
+
+<span class="nc" id="L49">        List&lt;ItemDto&gt; itemDtos = userItems.stream()</span>
+<span class="nc" id="L50">                .map(item -&gt; ItemMapper.toItemDto(item, commentsByItemId.getOrDefault(item.getId(), Collections.emptyList()), bookingsByItemId.getOrDefault(item.getId(), Collections.emptyList())))</span>
+<span class="nc" id="L51">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L53">        return itemDtos.stream()</span>
+<span class="nc" id="L54">                .sorted(this::compareBookingDates)</span>
+<span class="nc" id="L55">                .collect(Collectors.toList());</span>
+    }
+
+    private Map&lt;Long, List&lt;Comment&gt;&gt; getCommentsByItemId(List&lt;Item&gt; items) {
+<span class="nc" id="L59">        List&lt;Long&gt; itemIds = items.stream()</span>
+<span class="nc" id="L60">                .map(Item::getId)</span>
+<span class="nc" id="L61">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L63">        List&lt;Comment&gt; comments = commentRepository.findByItemIdIn(itemIds);</span>
+<span class="nc" id="L64">        return comments.stream()</span>
+<span class="nc" id="L65">                .collect(Collectors.groupingBy(comment -&gt; comment.getItem().getId()));</span>
+    }
+
+    private Map&lt;Long, List&lt;Booking&gt;&gt; getBookingsByItemId(List&lt;Item&gt; items) {
+<span class="nc" id="L69">        List&lt;Long&gt; itemIds = items.stream()</span>
+<span class="nc" id="L70">                .map(Item::getId)</span>
+<span class="nc" id="L71">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L73">        List&lt;Booking&gt; bookings = bookingRepository.findByItemIdIn(itemIds);</span>
+<span class="nc" id="L74">        return bookings.stream()</span>
+<span class="nc" id="L75">                .collect(Collectors.groupingBy(booking -&gt; booking.getItem().getId()));</span>
+    }
+
+
+    @Override
+    @Transactional
+    public ItemDto createItem(Long userId, ItemDto itemDto) {
+<span class="nc" id="L82">        Optional&lt;User&gt; userOptional = userRepository.findById(userId);</span>
+<span class="nc" id="L83">        User owner = userOptional.orElseThrow(() -&gt; new ObjectNotFoundException(String.format(&quot;Пользователь id %s не найден&quot;, userId)));</span>
+<span class="nc" id="L84">        Item item = ItemMapper.toItem(itemDto);</span>
+<span class="nc" id="L85">        item.setOwner(owner);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (item.getRequestId() != null) {</span>
+<span class="nc" id="L87">            requestRepository.findById(item.getRequestId()).orElseThrow(() -&gt;</span>
+<span class="nc" id="L88">                    new ObjectNotFoundException(String.format(&quot;Запрос id %s не найден&quot;, item.getRequestId())));</span>
+        }
+<span class="nc" id="L90">        itemRepository.save(item);</span>
+<span class="nc" id="L91">        log.info(&quot;Пользователь с id {} добавил новую вещь&quot;, owner.getId());</span>
+<span class="nc" id="L92">        return ItemMapper.toItemDto(item);</span>
+    }
+
+    @Override
+    public ItemDto getItemById(Long itemId, Long userId) {
+<span class="nc" id="L97">        Optional&lt;Item&gt; itemOptional = itemRepository.findById(itemId);</span>
+<span class="nc" id="L98">        Item item = itemOptional.orElseThrow(() -&gt; new ObjectNotFoundException(String.format(&quot;Вещь id %s не найдена&quot;, itemId)));</span>
+<span class="nc" id="L99">        List&lt;Comment&gt; comments = commentRepository.findByItemOrderByIdAsc(item);</span>
+<span class="nc" id="L100">        List&lt;Booking&gt; bookings = bookingRepository.findByItem(item);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (item.getOwner().getId().equals(userId)) {</span>
+<span class="nc" id="L102">            return ItemMapper.toItemDto(item, comments, bookings);</span>
+        }
+<span class="nc" id="L104">        log.info(&quot;Вещь с id {} получена&quot;, itemId);</span>
+<span class="nc" id="L105">        return ItemMapper.toItemDto(item, comments);</span>
+    }
+
+    @Override
+    @Transactional
+    public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
+<span class="nc" id="L111">        Optional&lt;Item&gt; itemOptional = itemRepository.findById(itemId);</span>
+<span class="nc" id="L112">        Item itemForUpdate = itemOptional.orElseThrow(() -&gt; new ObjectNotFoundException(String.format(&quot;Вещь id %s не найдена&quot;, itemId)));</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (!itemForUpdate.getOwner().getId().equals(userId)) {</span>
+<span class="nc" id="L114">            throw new ValidationException(&quot;Обновить вещь может только её хозяин!&quot;);</span>
+        }
+<span class="nc" id="L116">        Optional.ofNullable(itemDto.getName()).ifPresent(itemForUpdate::setName);</span>
+<span class="nc" id="L117">        Optional.ofNullable(itemDto.getDescription()).ifPresent(itemForUpdate::setDescription);</span>
+<span class="nc" id="L118">        Optional.ofNullable(itemDto.getAvailable()).ifPresent(itemForUpdate::setAvailable);</span>
+
+<span class="nc" id="L120">        log.info(&quot;Вещь id {} обновлена&quot;, itemId);</span>
+<span class="nc" id="L121">        itemRepository.save(itemForUpdate);</span>
+<span class="nc" id="L122">        return ItemMapper.toItemDto(itemForUpdate);</span>
+    }
+
+    @Override
+    public Collection&lt;ItemDto&gt; searchItem(String word, Integer from, Integer size) {
+<span class="nc" id="L127">        PageRequest page = PageRequest.of(from / size, size, Sort.by(&quot;name&quot;).ascending());</span>
+<span class="nc" id="L128">        return itemRepository.search(word, page).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteItem(Long itemId) {
+<span class="nc" id="L134">        itemRepository.deleteById(itemId);</span>
+<span class="nc" id="L135">    }</span>
+
+    private int compareBookingDates(ItemDto itemDto1, ItemDto itemDto2) {
+<span class="nc bnc" id="L138" title="All 4 branches missed.">        if (itemDto1.getNextBooking() == null &amp;&amp; itemDto2.getNextBooking() == null) return 0;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (itemDto1.getNextBooking() == null) return 1;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        if (itemDto2.getNextBooking() == null) return -1;</span>
+<span class="nc" id="L141">        return -itemDto1.getNextBooking().getStart().compareTo(itemDto2.getNextBooking().getStart());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

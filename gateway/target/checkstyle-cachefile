@@ -1,0 +1,21 @@
+#Sun Jul 09 15:53:49 YEKT 2023
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\ShareItGateway.java=1688813099078
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\booking\\dto\\BookingShortDto.java=1688813099079
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\booking\\dto\\StateOfBookingRequest.java=1688813099079
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\error\\ErrorResponse.java=1688813099080
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\error\\ExceptionsHandler.java=1688813099080
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\item\\ItemClient.java=1688847870037
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\item\\dto\\CommentShortDto.java=1688891359152
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\item\\dto\\ItemDto.java=1688813099081
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\request\\ItemRequestClient.java=1688813099082
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\request\\ItemRequestController.java=1688894154715
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\request\\dto\\ItemRequestDto.java=1688891132936
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\user\\UserClient.java=1688813099083
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\user\\UserController.java=1688892766335
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\user\\dto\\UserDto.java=1688813099083
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\validate\\BookingTimeValidator.java=1688813099084
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\validate\\Create.java=1688813099084
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\java\\ru\\practicum\\shareit\\validate\\Update.java=1688813099084
+C\:\\Users\\UserName\\IdeaProjects\\java-shareit\\gateway\\src\\main\\resources\\application.properties=1688813099085
+configuration*?=EDACC9CD650BCF0138BAE823522BABF6017811D9
+module-resource*?\:suppressions.xml=AF2D3E620D3C65A14EDA4B1F32DD318FEEF405BC

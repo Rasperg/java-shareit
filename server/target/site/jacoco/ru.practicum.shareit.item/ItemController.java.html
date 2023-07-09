@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ShareIt Server</a> &gt; <a href="index.source.html" class="el_package">ru.practicum.shareit.item</a> &gt; <span class="el_source">ItemController.java</span></div><h1>ItemController.java</h1><pre class="source lang-java linenums">package ru.practicum.shareit.item;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentShortDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.service.CommentService;
+import ru.practicum.shareit.item.service.ItemService;
+
+import java.util.Collection;
+
+@RestController
+@Validated
+@RequestMapping(&quot;/items&quot;)
+@RequiredArgsConstructor
+public class ItemController {
+    private final ItemService itemService;
+    private final CommentService commentService;
+
+    @PostMapping
+    public ItemDto createNewItem(@RequestHeader(&quot;X-Sharer-User-Id&quot;) final Long userId,
+                                 @RequestBody ItemDto itemDto) {
+<span class="nc" id="L26">        return itemService.createItem(userId, itemDto);</span>
+    }
+
+    @PatchMapping(&quot;/{itemId}&quot;)
+    public ItemDto updateItem(@RequestHeader(&quot;X-Sharer-User-Id&quot;) final Long userId,
+                              @RequestBody final ItemDto itemDto,
+                              @PathVariable final Long itemId) {
+<span class="nc" id="L33">        return itemService.updateItem(userId, itemId, itemDto);</span>
+    }
+
+    @GetMapping(&quot;/{itemId}&quot;)
+    public ResponseEntity&lt;ItemDto&gt; getItem(@PathVariable final Long itemId,
+                                           @RequestHeader(&quot;X-Sharer-User-Id&quot;) Long userId) {
+<span class="nc" id="L39">        return ResponseEntity.ok(itemService.getItemById(itemId, userId));</span>
+    }
+
+    @GetMapping
+    public Collection&lt;ItemDto&gt; getUserItems(@RequestHeader(&quot;X-Sharer-User-Id&quot;) final Long userId,
+                                            @RequestParam(value = &quot;from&quot;, required = false, defaultValue = &quot;0&quot;)
+                                            final Integer from,
+                                            @RequestParam(value = &quot;size&quot;, required = false, defaultValue = &quot;10&quot;)
+                                                final Integer size) {
+<span class="nc" id="L48">        return itemService.getUserItems(userId, from, size);</span>
+    }
+
+    @GetMapping(&quot;/search&quot;)
+    public Collection&lt;ItemDto&gt; searchItem(@RequestParam(&quot;text&quot;) final String text,
+                                          @RequestParam(value = &quot;from&quot;, required = false, defaultValue = &quot;0&quot;)
+                                          final Integer from,
+                                          @RequestParam(value = &quot;size&quot;, required = false, defaultValue = &quot;10&quot;)
+                                              final Integer size) {
+<span class="nc" id="L57">        return itemService.searchItem(text, from, size);</span>
+    }
+
+    @PostMapping(&quot;/{itemId}/comment&quot;)
+    public CommentDto createItemComment(@RequestBody final CommentShortDto commentShortDto,
+                                        @PathVariable final Long itemId,
+                                        @RequestHeader(&quot;X-Sharer-User-Id&quot;) Long userId) {
+<span class="nc" id="L64">        return commentService.addNewComment(commentShortDto, itemId, userId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
