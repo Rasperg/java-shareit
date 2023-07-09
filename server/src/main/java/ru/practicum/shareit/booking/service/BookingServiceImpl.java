@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
         StateOfBookingRequest stateIn = getState(state);
         User user = userRepository.findById(userId).orElseThrow();
         PageRequest page = PageRequest.of(from / size, size, Sort.by("start").descending());
-        LocalDateTime now = LocalDateTime.now().plusHours(5);
+        LocalDateTime now = LocalDateTime.now();
         List<Booking> userBookings;
 
         switch (stateIn) {
@@ -130,7 +130,7 @@ public class BookingServiceImpl implements BookingService {
         StateOfBookingRequest stateIn = getState(state);
         User user = userRepository.findById(userId).orElseThrow(() -> new ObjectNotFoundException(String.format("Пользователь id %s не найден", userId)));
         PageRequest page = PageRequest.of(from / size, size, Sort.by("start").descending());
-        LocalDateTime now = LocalDateTime.now().plusHours(5);
+        LocalDateTime now = LocalDateTime.now();
         List<Booking> userBookings;
 
         switch (stateIn) {

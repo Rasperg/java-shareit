@@ -38,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto addNewComment(CommentShortDto commentDto, Long itemId, Long userId) {
-        LocalDateTime now = LocalDateTime.now().plusHours(5);
+        LocalDateTime now = LocalDateTime.now();
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Вещь id %s не найдена", itemId)));
         User user = userRepository.findById(userId).orElseThrow(() ->

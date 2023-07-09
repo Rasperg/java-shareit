@@ -54,7 +54,7 @@ public class ItemMapper {
     public static ItemDto toItemDto(Item item, List<Comment> itemComments, List<Booking> bookings) {
         ItemDto itemDto = toItemDto(item, itemComments);
 
-        LocalDateTime now = LocalDateTime.now().plusHours(5);
+        LocalDateTime now = LocalDateTime.now();
         for (Booking booking : bookings) {
             if (booking.getStart().isAfter(now) &&
                     (booking.getStatus() == BookingStatus.WAITING ||
